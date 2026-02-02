@@ -1,0 +1,11 @@
+[tools]
+"cargo:bacon" = "latest"
+"cargo:sqlx-cli" = "latest"
+rust = "1.92.0"
+
+[tasks.dev]
+run = '''
+trap "docker compose down" EXIT INT TERM
+docker compose up &
+bacon run
+'''

@@ -1,0 +1,10 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb-ha:pg18
+    ports:
+      - "5432:5432"
+    volumes:
+      - .dev/db:/pgdata
+    environment:
+      - PGDATA=/pgdata
+      - POSTGRES_PASSWORD=password

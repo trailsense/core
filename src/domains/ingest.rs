@@ -1,3 +1,7 @@
+mod domain {
+    mod model;
+}
+
 mod api {
     mod handlers;
     pub mod routes;

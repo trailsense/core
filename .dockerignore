@@ -1,0 +1,7 @@
+.git
+.gitignore
+.idea
+.dev
+target
+.env
+.env.production

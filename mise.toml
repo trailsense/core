@@ -9,3 +9,16 @@ trap "docker compose down" EXIT INT TERM
 docker compose up &
 bacon run
 '''
+
+[tasks.deploy]
+description = "Deploy production stack to Uncloud"
+run = '''
+if [ ! -f .env.production ]; then
+  echo ".env.production not found. Copy .env.production.example first."
+  exit 1
+fi
+set -a
+source .env.production
+set +a
+uc deploy -f compose.production.yaml
+'''

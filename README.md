@@ -25,6 +25,7 @@ Deploy to Uncloud:
 ```sh
 mise run deploy
 ```
+Migrations are applied automatically by the app on startup.
 
 Redeploy after any change to `compose.production.yaml` or `.env.production`:
 ```sh

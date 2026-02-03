@@ -32,5 +32,9 @@ pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {
 
     info!("Postgres connection successful");
 
+    // Run schema migrations on startup so all environments stay in sync.
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    info!("Database migrations applied");
+
     Ok(pool)
 }

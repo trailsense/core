@@ -17,7 +17,7 @@ pub struct Config {
 /// It returns a Result with the Config struct or an error if any of the environment variables are missing.
 impl Config {
     pub fn from_env() -> Result<Self, AppError> {
-        dotenvy::dotenv().expect("No .env file found");
+        let _ = dotenvy::dotenv();
 
         Ok(Self {
             database_url: env::var("DATABASE_URL")?,

@@ -13,19 +13,19 @@ impl IngestRepository {
         &self,
         tx: &mut Transaction<'_, Postgres>,
         measurement: MeasurementDto,
-    ) -> Result<String, sqlx::Error> {
+    ) -> Result<(), sqlx::Error> {
         sqlx::query!(
             r#"
         INSERT INTO measurements (node_id, count, created_at)
         VALUES ($1, $2, COALESCE($3, NOW()))
         "#,
             measurement.node_id,
-            measurement.count,
+            i64::from(measurement.count),
             measurement.created_at
         )
         .execute(&mut **tx)
         .await?;
 
-        Ok("Ingest accepted".into())
+        Ok(())
     }
 }

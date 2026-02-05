@@ -7,6 +7,13 @@ use validator::Validate;
 #[derive(Deserialize, Serialize, ToSchema, Validate)]
 pub struct MeasurementDto {
     pub node_id: Uuid,
-    pub count: i32,
-    pub created_at: Option<DateTime<Utc>>,
+    pub count: u32,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Validate)]
+pub struct IngestDto {
+    pub node_id: Uuid,
+    pub count: u32,
+    pub age_in_seconds: u32,
 }

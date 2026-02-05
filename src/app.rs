@@ -1,5 +1,5 @@
 use crate::common::app_state::AppState;
-use crate::common::error::{AppError, handle_error};
+use crate::common::error::{AppError, ErrorResponse, handle_error};
 use crate::common::openapi::ApiDoc;
 use crate::domains::ingest::ingest_routes;
 use crate::domains::measurements::measurement_routes;
@@ -7,6 +7,7 @@ use crate::domains::node::node_routes;
 use axum::Router;
 use axum::error_handling::HandleErrorLayer;
 use axum::http::{Method, StatusCode, header};
+use axum::Json;
 use axum::response::IntoResponse;
 use std::time::Duration;
 use tower::ServiceBuilder;
@@ -79,5 +80,8 @@ async fn health_check() -> &'static str {
 /// Fallback handler for unmatched routes
 /// This function returns a 404 Not Found response with a message.
 pub async fn fallback() -> Result<impl IntoResponse, AppError> {
-    Ok((StatusCode::NOT_FOUND, "Not Found"))
+    Ok((
+        StatusCode::NOT_FOUND,
+        Json(ErrorResponse::new("Route not found")),
+    ))
 }

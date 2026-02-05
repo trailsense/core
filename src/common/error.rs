@@ -1,12 +1,29 @@
-use crate::common::dto::RestApiResponse;
 use axum::{
     BoxError,
+    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
 };
+use serde::Serialize;
 use std::env;
 use thiserror::Error;
 use tracing::error;
+use utoipa::ToSchema;
+
+#[derive(Serialize, ToSchema)]
+pub struct ErrorResponse {
+    /// Human-readable error description.
+    #[schema(example = "Validation error: node_id is required")]
+    pub message: String,
+}
+
+impl ErrorResponse {
+    pub fn new(message: impl Into<String>) -> Self {
+        Self {
+            message: message.into(),
+        }
+    }
+}
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -36,7 +53,7 @@ impl IntoResponse for AppError {
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        RestApiResponse::<()>::failure(status.as_u16(), self.to_string()).into_response()
+        (status, Json(ErrorResponse::new(self.to_string()))).into_response()
     }
 }
 
@@ -50,7 +67,5 @@ pub async fn handle_error(error: BoxError) -> impl IntoResponse {
     let message = error.to_string();
     error!(?status, %message, "Request failed");
 
-    let body = RestApiResponse::<()>::failure(status.as_u16(), message);
-
-    (status, body)
+    (status, Json(ErrorResponse::new(message)))
 }

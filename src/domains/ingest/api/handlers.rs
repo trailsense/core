@@ -1,18 +1,28 @@
 use crate::common::app_state::AppState;
-use crate::common::dto::RestApiResponse;
-use crate::common::error::AppError;
+use crate::common::error::{AppError, ErrorResponse};
 use crate::domains::ingest::dto::ingest_dto::IngestDto;
 use axum::Json;
 use axum::extract::State;
 use axum::response::IntoResponse;
+use serde::Serialize;
+use utoipa::ToSchema;
 use validator::Validate;
+
+#[derive(Serialize, ToSchema)]
+struct IngestAcceptedResponse {
+    /// Human-readable success description.
+    #[schema(example = "Ingest accepted")]
+    message: String,
+}
 
 #[utoipa::path(
     post,
     path = "/",
     request_body = Vec<IngestDto>,
     responses(
-        (status = 200, description = "Ingest accepted", body = String)
+        (status = 200, description = "Ingest accepted", body = IngestAcceptedResponse),
+        (status = 400, description = "Validation error", body = ErrorResponse),
+        (status = 500, description = "Internal server error", body = ErrorResponse)
     ),
     tag = "Ingest"
 )]
@@ -35,7 +45,7 @@ pub async fn add_measurement(
 
     state.ingest_service.create_measurements(payload).await?;
 
-    Ok(RestApiResponse::<()>::success_message_only(
-        "Ingest accepted",
-    ))
+    Ok(Json(IngestAcceptedResponse {
+        message: "Ingest accepted".to_string(),
+    }))
 }

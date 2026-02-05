@@ -1,4 +1,5 @@
 use crate::common::error::AppError;
+use axum::http::HeaderValue;
 use std::env;
 
 /// Config is a struct that holds the configuration for the application.
@@ -10,6 +11,7 @@ pub struct Config {
 
     pub service_host: String,
     pub service_port: String,
+    pub cors_allowed_origins: Vec<HeaderValue>,
 }
 
 /// from_env reads the environment variables and returns a Config struct.
@@ -18,6 +20,8 @@ pub struct Config {
 impl Config {
     pub fn from_env() -> Result<Self, AppError> {
         let _ = dotenvy::dotenv();
+
+        let cors_allowed_origins = parse_cors_allowed_origins(env::var("CORS_ALLOWED_ORIGINS"));
 
         Ok(Self {
             database_url: env::var("DATABASE_URL")?,
@@ -31,7 +35,18 @@ impl Config {
 
             service_host: env::var("SERVICE_HOST")?,
             service_port: env::var("SERVICE_PORT")?,
+            cors_allowed_origins,
         })
         .map_err(|err| AppError::InvalidEnvFile(err))
     }
+}
+
+fn parse_cors_allowed_origins(raw_origins: Result<String, env::VarError>) -> Vec<HeaderValue> {
+    raw_origins
+        .unwrap_or_default()
+        .split(',')
+        .map(str::trim)
+        .filter(|origin| !origin.is_empty())
+        .filter_map(|origin| HeaderValue::from_str(origin).ok())
+        .collect::<Vec<_>>()
 }

@@ -10,7 +10,7 @@ use axum::http::{Method, StatusCode, header};
 use axum::response::IntoResponse;
 use std::time::Duration;
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
@@ -18,6 +18,7 @@ use utoipa_scalar::{Scalar, Servable};
 
 pub fn create_router(state: AppState) -> Router {
     let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::list(state.config.cors_allowed_origins.clone()))
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any)
         .allow_headers([header::AUTHORIZATION, header::ACCEPT]);

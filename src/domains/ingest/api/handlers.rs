@@ -1,13 +1,15 @@
-use axum::Json;
-use axum::response::IntoResponse;
-use validator::Validate;
+use crate::common::app_state::AppState;
 use crate::common::dto::RestApiResponse;
 use crate::common::error::AppError;
 use crate::domains::ingest::dto::ingest_dto::MeasurementDto;
+use axum::extract::State;
+use axum::response::IntoResponse;
+use axum::Json;
+use validator::Validate;
 
 #[utoipa::path(
     post,
-    path = "/{id}",
+    path = "/",
     request_body = MeasurementDto,
     responses(
         (status = 200, description = "Ingest accepted", body = String)
@@ -15,7 +17,7 @@ use crate::domains::ingest::dto::ingest_dto::MeasurementDto;
     tag = "Ingest"
 )]
 pub async fn add_measurement(
-    axum::extract::Path(id): axum::extract::Path<String>,
+    State(state): State<AppState>,
     Json(payload): Json<MeasurementDto>,
 ) -> Result<impl IntoResponse, AppError> {
     payload.validate().map_err(|err| {
@@ -23,6 +25,9 @@ pub async fn add_measurement(
         AppError::ValidationError(format!("Invalid input: {}", err))
     })?;
 
-    let mut payload = payload;
-    Ok(RestApiResponse::<()>::success_message_only("Ingest accepted"))
+    state.ingest_service.create_measurement(payload).await?;
+
+    Ok(RestApiResponse::<()>::success_message_only(
+        "Ingest accepted",
+    ))
 }

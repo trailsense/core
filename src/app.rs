@@ -1,22 +1,20 @@
+use crate::common::app_state::AppState;
 use crate::common::error::{handle_error, AppError};
+use crate::common::openapi::ApiDoc;
+use crate::domains::ingest::ingest_routes;
 use axum::error_handling::HandleErrorLayer;
 use axum::http::{header, Method, StatusCode};
-use axum::{Router};
-use std::time::Duration;
 use axum::response::IntoResponse;
+use axum::Router;
+use std::time::Duration;
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
-use crate::{
-    domains::{
-        ingest::{ingest_routes}
-    }
-};
-use crate::common::openapi::ApiDoc;
+use utoipa_scalar::{Scalar, Servable};
 
-pub fn create_router() -> Router {
+pub fn create_router(state: AppState) -> Router {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any)
@@ -27,17 +25,21 @@ pub fn create_router() -> Router {
         .timeout(Duration::from_secs(10))
         .layer(cors);
 
-    let openapi_router = OpenApiRouter::with_openapi(ApiDoc::openapi())
-        .nest("/ingest", ingest_routes());
+    let openapi_router =
+        OpenApiRouter::with_openapi(ApiDoc::openapi()).nest("/ingest", ingest_routes());
 
     let (router, openapi) = openapi_router.split_for_parts();
 
     Router::new()
         .route("/health", axum::routing::get(health_check))
-        .route("/docs/openapi.json", axum::routing::get({
-            let openapi = openapi.clone();
-            move || async { axum::Json(openapi) }
-        }))
+        .route(
+            "/docs/openapi.json",
+            axum::routing::get({
+                let openapi = openapi.clone();
+                move || async { axum::Json(openapi) }
+            }),
+        )
+        .merge(Scalar::with_url("/docs", openapi))
         .merge(router)
         .fallback(fallback)
         .layer(
@@ -62,7 +64,7 @@ pub fn create_router() -> Router {
                 ),
         )
         .layer(middleware_stack)
-        //.with_state(state)
+        .with_state(state)
 }
 
 async fn health_check() -> &'static str {

@@ -1,6 +1,7 @@
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
+use crate::common::app_state::AppState;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -8,8 +9,8 @@ use utoipa_axum::routes;
 )]
 pub struct IngestApiDoc;
 
-pub fn ingest_routes() -> OpenApiRouter {
+pub fn ingest_routes() -> OpenApiRouter<AppState> {
     OpenApiRouter::with_openapi(IngestApiDoc::openapi())
         .routes(routes!(super::handlers::add_measurement))
-        //.route_layer(middleware::from_fn(NODEAUTHENTICATOR)
+        //.route_layer(middleware::from_fn(NODEAUTHENTICATOR) TODO: Add node authentication here, unprotected endpoint for now
 }

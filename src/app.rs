@@ -1,15 +1,16 @@
 use crate::common::app_state::AppState;
-use crate::common::error::{handle_error, AppError};
+use crate::common::error::{AppError, handle_error};
 use crate::common::openapi::ApiDoc;
 use crate::domains::ingest::ingest_routes;
+use crate::domains::measurements::measurement_routes;
 use crate::domains::node::node_routes;
-use axum::error_handling::HandleErrorLayer;
-use axum::http::{header, Method, StatusCode};
-use axum::response::IntoResponse;
 use axum::Router;
+use axum::error_handling::HandleErrorLayer;
+use axum::http::{Method, StatusCode, header};
+use axum::response::IntoResponse;
 use std::time::Duration;
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
@@ -17,6 +18,7 @@ use utoipa_scalar::{Scalar, Servable};
 
 pub fn create_router(state: AppState) -> Router {
     let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::list(state.config.cors_allowed_origins.clone()))
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any)
         .allow_headers([header::AUTHORIZATION, header::ACCEPT]);
@@ -28,6 +30,7 @@ pub fn create_router(state: AppState) -> Router {
 
     let openapi_router = OpenApiRouter::with_openapi(ApiDoc::openapi())
         .nest("/ingest", ingest_routes())
+        .nest("/measurements", measurement_routes())
         .nest("/nodes", node_routes());
 
     let (router, openapi) = openapi_router.split_for_parts();

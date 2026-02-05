@@ -13,9 +13,7 @@ use axum::response::IntoResponse;
     ),
     tag = "Nodes"
 )]
-pub async fn list_nodes(
-    State(state): State<AppState>,
-) -> Result<impl IntoResponse, AppError> {
+pub async fn list_nodes(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
     let nodes = state.node_service.list_nodes().await?;
     Ok(RestApiResponse::success(nodes))
 }

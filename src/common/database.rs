@@ -1,11 +1,11 @@
+use crate::common::config::Config;
+use crate::common::error::AppError;
+use sqlx::postgres::PgPoolOptions;
+use sqlx::{Connection, PgPool, Postgres, Transaction};
 use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
-use sqlx::{Connection, PgPool, Postgres, Transaction};
-use sqlx::postgres::PgPoolOptions;
 use tracing::{info, warn};
-use crate::common::config::Config;
-use crate::common::error::AppError;
 
 /// setup_database initializes the database connection pool.
 pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {

@@ -1,7 +1,7 @@
+use crate::common::app_state::AppState;
 use utoipa::OpenApi;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
-use crate::common::app_state::AppState;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -10,6 +10,5 @@ use crate::common::app_state::AppState;
 pub struct NodeApiDoc;
 
 pub fn node_routes() -> OpenApiRouter<AppState> {
-    OpenApiRouter::with_openapi(NodeApiDoc::openapi())
-        .routes(routes!(super::handlers::list_nodes))
+    OpenApiRouter::with_openapi(NodeApiDoc::openapi()).routes(routes!(super::handlers::list_nodes))
 }

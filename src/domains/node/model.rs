@@ -6,9 +6,11 @@ use uuid::Uuid;
 #[derive(Clone, Debug)]
 pub struct Node {
     pub id: Uuid,
+    pub name: String,
     pub status: NodeStatus,
     pub latitude: f64,
     pub longitude: f64,
+    pub send_frequency_seconds: i64,
     pub created_at: DateTime<Utc>,
 }
 

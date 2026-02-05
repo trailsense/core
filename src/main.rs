@@ -8,6 +8,8 @@ use crate::common::tracing::setup_tracing;
 mod app;
 mod common;
 mod domains;
+#[macro_use]
+mod macros;
 
 /// Main entry point for the application.
 /// It sets up the database connection, initializes the server, and starts listening for requests.

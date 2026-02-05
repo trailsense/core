@@ -20,10 +20,18 @@ pub async fn add_measurement(
     State(state): State<AppState>,
     Json(payload): Json<Vec<IngestDto>>,
 ) -> Result<impl IntoResponse, AppError> {
-    payload.validate().map_err(|err| {
-        tracing::error!("Validation error: {}", err);
-        AppError::ValidationError(format!("Invalid input: {}", err))
-    })?;
+    if payload.is_empty() {
+        return Err(AppError::ValidationError(
+            "Payload must contain at least one measurement".to_string(),
+        ));
+    }
+
+    for (index, ingest) in payload.iter().enumerate() {
+        ingest.validate().map_err(|err| {
+            tracing::error!("Validation error at payload[{index}]: {}", err);
+            AppError::ValidationError(format!("Invalid input at payload[{index}]: {}", err))
+        })?;
+    }
 
     state.ingest_service.create_measurements(payload).await?;
 

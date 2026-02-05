@@ -1,3 +1,5 @@
 pub mod app;
 pub mod common;
 pub mod domains;
+#[macro_use]
+mod macros;

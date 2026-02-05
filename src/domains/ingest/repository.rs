@@ -5,10 +5,6 @@ use sqlx::{Postgres, Transaction};
 pub struct IngestRepository;
 
 impl IngestRepository {
-    pub fn new() -> Self {
-        Self
-    }
-
     pub async fn create(
         &self,
         tx: &mut Transaction<'_, Postgres>,
@@ -17,7 +13,7 @@ impl IngestRepository {
         sqlx::query!(
             r#"
         INSERT INTO measurements (node_id, count, created_at)
-        VALUES ($1, $2, COALESCE($3, NOW()))
+        VALUES ($1, $2, $3)
         "#,
             measurement.node_id,
             i64::from(measurement.count),

@@ -1,8 +1,11 @@
+use std::future::Future;
+use std::pin::Pin;
 use std::time::Duration;
-use sqlx::PgPool;
+use sqlx::{Connection, PgPool, Postgres, Transaction};
 use sqlx::postgres::PgPoolOptions;
 use tracing::{info, warn};
 use crate::common::config::Config;
+use crate::common::error::AppError;
 
 /// setup_database initializes the database connection pool.
 pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {
@@ -37,4 +40,19 @@ pub async fn setup_database(config: &Config) -> Result<PgPool, sqlx::Error> {
     info!("Database migrations applied");
 
     Ok(pool)
+}
+
+pub type TransactionFuture<'a, T> =
+    Pin<Box<dyn Future<Output = Result<T, sqlx::Error>> + Send + 'a>>;
+
+pub async fn run_in_transaction<T, F>(pool: &PgPool, f: F) -> Result<T, AppError>
+where
+    T: Send,
+    F: for<'c> FnOnce(&'c mut Transaction<'_, Postgres>) -> TransactionFuture<'c, T> + Send + Sync,
+{
+    let mut conn = pool.acquire().await?;
+    conn.transaction(f).await.map_err(|err| {
+        tracing::error!("Transaction failed: {err}");
+        AppError::DatabaseError(err)
+    })
 }

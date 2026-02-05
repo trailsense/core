@@ -9,7 +9,7 @@ tokio = { version = "1.49.0", features = ["full"] }
 tower = { version = "0.5.2", features = ["timeout"] }
 tower-http = { version = "0.6.8", features = ["cors", "trace"] }
 serde = { version = "1.0.228", features = ["derive"] }
-chrono = { version = "0.4.42", features = ["serde"] }
+chrono = { version = "0.4.42", features = ["serde", "now"] }
 utoipa = { version = "5.3.1", features = ["axum_extras", "uuid", "chrono"] }
 validator = { version = "0.20.0", features = ["derive"] }
 tracing = "0.1.44"
@@ -18,4 +18,5 @@ sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "migrate", 
 dotenvy = "0.15.7"
 utoipa-axum = "0.2.0"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter", "chrono"] }
-uuid = "1.19.0"
+uuid = { version = "1.19.0", features = ["serde"] }
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }

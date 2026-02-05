@@ -1,11 +1,21 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Serialize, ToSchema, Validate)]
 pub struct MeasurementDto {
-    pub wifi: i32,
-    pub bluetooth: i32,
-    pub created_at: Option<DateTime<Utc>>
+    pub node_id: Uuid,
+    pub count: u32,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, Validate)]
+pub struct IngestDto {
+    pub node_id: Uuid,
+    pub count: u32,
+    #[schema(maximum = 31_536_000)]
+    #[validate(range(max = 31_536_000))] // 1 year
+    pub age_in_seconds: u32,
 }

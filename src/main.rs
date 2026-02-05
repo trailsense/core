@@ -1,6 +1,6 @@
 use tracing::info;
 use crate::app::create_router;
-use crate::common::bootstrap::shutdown_signal;
+use crate::common::bootstrap::{build_app_state, shutdown_signal};
 use crate::common::config::Config;
 use crate::common::database::setup_database;
 use crate::common::tracing::setup_tracing;
@@ -8,6 +8,8 @@ use crate::common::tracing::setup_tracing;
 mod app;
 mod common;
 mod domains;
+#[macro_use]
+mod macros;
 
 /// Main entry point for the application.
 /// It sets up the database connection, initializes the server, and starts listening for requests.
@@ -23,7 +25,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let config = Config::from_env()?;
     let pool = setup_database(&config).await?;
-    let app = create_router();
+    let state = build_app_state(pool, config.clone());
+    let app = create_router(state);
 
     let addr = format!("{}:{}", config.service_host, config.service_port);
 

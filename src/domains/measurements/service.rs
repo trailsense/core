@@ -44,6 +44,13 @@ impl MeasurementService {
             ));
         }
 
+        if !self.repo.node_exists(&self.pool, query.node_id).await? {
+            return Err(AppError::NotFound(format!(
+                "Node {} not found",
+                query.node_id
+            )));
+        }
+
         self.repo
             .timeseries(
                 &self.pool,

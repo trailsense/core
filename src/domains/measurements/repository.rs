@@ -8,6 +8,24 @@ use uuid::Uuid;
 pub struct MeasurementRepository;
 
 impl MeasurementRepository {
+    pub async fn node_exists(&self, pool: &PgPool, node_id: Uuid) -> Result<bool, AppError> {
+        let exists = sqlx::query_scalar::<_, bool>(
+            r#"
+            SELECT EXISTS(
+                SELECT 1
+                FROM nodes
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(node_id)
+        .fetch_one(pool)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+        Ok(exists)
+    }
+
     pub async fn timeseries(
         &self,
         pool: &PgPool,

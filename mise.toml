@@ -22,3 +22,9 @@ source .env.production
 set +a
 uc deploy -f compose.production.yaml
 '''
+
+[tasks.sqlx-prepare]
+description = "Update SQLx offline query cache"
+run = '''
+cargo sqlx prepare
+'''

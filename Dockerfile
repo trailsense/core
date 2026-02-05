@@ -11,7 +11,9 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY migrations ./migrations
+COPY .sqlx ./.sqlx
 
+ENV SQLX_OFFLINE=true
 RUN cargo build --release --locked
 
 FROM debian:bookworm-slim AS runtime

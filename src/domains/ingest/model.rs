@@ -6,5 +6,5 @@ use uuid::Uuid;
 pub struct Measurement {
     pub node_id: Uuid,
     pub count: i64,
-    pub created_at: Option<DateTime<Utc>>
+    pub created_at: DateTime<Utc>,
 }

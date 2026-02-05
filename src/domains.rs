@@ -1,5 +1,5 @@
 pub mod ingest;
-mod node;
+pub mod node;
 mod analytics;
 mod geo;
 mod user;

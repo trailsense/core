@@ -2,6 +2,7 @@ use crate::common::app_state::AppState;
 use crate::common::error::{handle_error, AppError};
 use crate::common::openapi::ApiDoc;
 use crate::domains::ingest::ingest_routes;
+use crate::domains::node::node_routes;
 use axum::error_handling::HandleErrorLayer;
 use axum::http::{header, Method, StatusCode};
 use axum::response::IntoResponse;
@@ -25,8 +26,9 @@ pub fn create_router(state: AppState) -> Router {
         .timeout(Duration::from_secs(10))
         .layer(cors);
 
-    let openapi_router =
-        OpenApiRouter::with_openapi(ApiDoc::openapi()).nest("/ingest", ingest_routes());
+    let openapi_router = OpenApiRouter::with_openapi(ApiDoc::openapi())
+        .nest("/ingest", ingest_routes())
+        .nest("/nodes", node_routes());
 
     let (router, openapi) = openapi_router.split_for_parts();
 

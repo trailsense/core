@@ -1,9 +1,9 @@
-use tracing::info;
 use crate::app::create_router;
 use crate::common::bootstrap::{build_app_state, shutdown_signal};
 use crate::common::config::Config;
 use crate::common::database::setup_database;
 use crate::common::tracing::setup_tracing;
+use tracing::info;
 
 mod app;
 mod common;

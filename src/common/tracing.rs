@@ -1,10 +1,9 @@
 use tracing_subscriber::fmt::format::FmtSpan;
-use tracing_subscriber::{EnvFilter, Layer};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
+use tracing_subscriber::{EnvFilter, Layer};
 
 pub fn setup_tracing() {
-
     let filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| "info,opentelemetry=debug".parse().unwrap());
 

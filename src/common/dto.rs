@@ -29,7 +29,6 @@ where
             data: Some(data),
         }
     }
-    
 
     /// Create a success response with a custom message.
     pub fn success_with_message(message: impl Into<String>, data: T) -> Self {
@@ -45,10 +44,10 @@ where
         Self {
             status: 200,
             message: message.into(),
-            data: None
+            data: None,
         }
     }
-    
+
     /// Create a failure response with no data.
     pub fn failure(status: u16, message: impl Into<String>) -> Self {
         Self {
@@ -79,12 +78,12 @@ impl<T: Serialize> RestApiResponse<T> {
     pub fn success_with_message(message: impl Into<String>, data: T) -> Self {
         Self(ApiResponse::success_with_message(message, data))
     }
-    
+
     /// Return a successful response without a body
     pub fn success_message_only(message: impl Into<String>) -> Self {
         Self(ApiResponse::success_message_only(message))
     }
-    
+
     /// Return a failed response with a status code and message.
     pub fn failure(status: u16, message: impl Into<String>) -> Self {
         Self(ApiResponse::failure(status, message))

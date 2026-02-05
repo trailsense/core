@@ -7,9 +7,8 @@ pub mod dto {
     pub mod ingest_dto;
 }
 
-pub mod model;
 pub mod repository;
 pub mod service;
 
-pub use api::routes::{ingest_routes};
+pub use api::routes::ingest_routes;
 pub use service::IngestService;

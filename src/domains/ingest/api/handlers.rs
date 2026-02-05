@@ -2,9 +2,9 @@ use crate::common::app_state::AppState;
 use crate::common::dto::RestApiResponse;
 use crate::common::error::AppError;
 use crate::domains::ingest::dto::ingest_dto::IngestDto;
+use axum::Json;
 use axum::extract::State;
 use axum::response::IntoResponse;
-use axum::Json;
 use validator::Validate;
 
 #[utoipa::path(

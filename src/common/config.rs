@@ -1,5 +1,5 @@
-use std::env;
 use crate::common::error::AppError;
+use std::env;
 
 /// Config is a struct that holds the configuration for the application.
 #[derive(Clone, Debug)]
@@ -31,8 +31,7 @@ impl Config {
 
             service_host: env::var("SERVICE_HOST")?,
             service_port: env::var("SERVICE_PORT")?,
-        }).map_err(|err| {
-            AppError::InvalidEnvFile(err)
         })
+        .map_err(|err| AppError::InvalidEnvFile(err))
     }
 }

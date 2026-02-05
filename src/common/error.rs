@@ -1,12 +1,12 @@
-use std::env;
+use crate::common::dto::RestApiResponse;
 use axum::{
+    BoxError,
     http::StatusCode,
     response::{IntoResponse, Response},
-    BoxError,
 };
+use std::env;
 use thiserror::Error;
 use tracing::error;
-use crate::common::dto::RestApiResponse;
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -35,7 +35,7 @@ impl IntoResponse for AppError {
             AppError::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        
+
         RestApiResponse::<()>::failure(status.as_u16(), self.to_string()).into_response()
     }
 }

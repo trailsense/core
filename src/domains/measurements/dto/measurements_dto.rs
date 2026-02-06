@@ -16,7 +16,7 @@ pub struct MeasurementDto {
 pub struct TimeseriesQueryDto {
     /// Node identifier to aggregate measurements for.
     pub node_id: Uuid,
-    /// Aggregation bucket. `hour` supports up to 31 days, `day` supports up to 1 year.
+    /// Aggregation bucket. `hour` supports up to 31 days, `day` and `week` support up to 1 year.
     #[param(example = "day")]
     pub bucket: TimeseriesBucket,
     /// Range start (inclusive), must be earlier than `to`.
@@ -26,7 +26,7 @@ pub struct TimeseriesQueryDto {
         example = "2026-01-01T00:00:00Z"
     )]
     pub from: DateTime<Utc>,
-    /// Range end (exclusive); max range is 1 year (or 31 days when `bucket=hour`).
+    /// Range end (exclusive); max range is 1 year (`day`/`week`) or 31 days (`hour`).
     #[param(
         value_type = String,
         format = DateTime,
@@ -40,6 +40,7 @@ pub struct TimeseriesQueryDto {
 pub enum TimeseriesBucket {
     Hour,
     Day,
+    Week,
 }
 
 #[derive(Serialize, ToSchema, FromRow)]

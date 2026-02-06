@@ -31,17 +31,14 @@ impl MeasurementService {
         }
 
         let range = query.to - query.from;
-        let max_year = TimeDelta::days(366);
-        if range > max_year {
-            return Err(AppError::ValidationError(
-                "Date range must not exceed 1 year".to_string(),
-            ));
-        }
+        let (max_range, error_message) = match query.bucket {
+            TimeseriesBucket::Hour => (TimeDelta::days(31), "Hourly range must not exceed 1 month"),
+            TimeseriesBucket::Day => (TimeDelta::days(366), "Daily range must not exceed 1 year"),
+            TimeseriesBucket::Week => (TimeDelta::days(366), "Weekly range must not exceed 1 year"),
+        };
 
-        if matches!(query.bucket, TimeseriesBucket::Hour) && range > TimeDelta::days(31) {
-            return Err(AppError::ValidationError(
-                "Hourly range must not exceed 1 month".to_string(),
-            ));
+        if range > max_range {
+            return Err(AppError::ValidationError(error_message.to_string()));
         }
 
         if !self.repo.node_exists(&self.pool, query.node_id).await? {

@@ -37,6 +37,7 @@ impl MeasurementRepository {
         let bucket_width = match bucket {
             TimeseriesBucket::Hour => "1 hour",
             TimeseriesBucket::Day => "1 day",
+            TimeseriesBucket::Week => "1 week",
         };
 
         sqlx::query_as::<_, TimeseriesPointDto>(

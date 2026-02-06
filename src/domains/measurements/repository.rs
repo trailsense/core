@@ -42,8 +42,13 @@ impl MeasurementRepository {
         sqlx::query_as::<_, TimeseriesPointDto>(
             r#"
             SELECT
-                time_bucket($1::interval, created_at) AS bucket_start,
-                SUM(count)::bigint AS total_count
+                time_bucket_gapfill(
+                    $1::interval,
+                    created_at,
+                    start => $3::timestamptz,
+                    finish => $4::timestamptz
+                ) AS bucket_start,
+                COALESCE(SUM(count), 0)::bigint AS total_count
             FROM measurements
             WHERE node_id = $2
               AND created_at >= $3
